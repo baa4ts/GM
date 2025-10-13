@@ -1,23 +1,23 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { RegistrarUserDto } from './dto/registrar-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  registrar(@Body() datos: RegistrarUserDto) {
+    return this.usersService.registrar(datos);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  listar() {
+    return this.usersService.listar();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  buscarUno(@Param('id') id: string) {
+    return this.usersService.buscarUno(+id);
   }
 }
