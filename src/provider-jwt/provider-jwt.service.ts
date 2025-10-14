@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { UserDecoded, UserPayload } from './interfaces/jwt.interface';
 
 @Injectable()
 export class ProviderJwtService {
+   constructor() {}
+
    private readonly secret = process.env.JWT_SECRET || '123456';
 
-   generar(payload: object) {
+   generar(payload: UserPayload) {
       return jwt.sign(payload, this.secret, { expiresIn: '1h' });
    }
 
-   verificar(token: string) {
-      return jwt.verify(token, this.secret);
-   }
-
-   decodificar(token: string) {
-      return jwt.decode(token, { json: true });
+   verificar(token: string): UserDecoded | null {
+      try {
+         return jwt.verify(token, this.secret) as unknown as UserDecoded;
+      } catch {
+         return null;
+      }
    }
 }

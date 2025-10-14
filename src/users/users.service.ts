@@ -5,10 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
 import { User } from 'generated/prisma';
 import { ActualizarUserDto } from './dto/actualizar-user.dtos';
+import { ProviderJwtService } from 'src/provider-jwt/provider-jwt.service';
 
 @Injectable()
 export class UsersService {
-   constructor(private prisma: PrismaService) {}
+   constructor(
+      private readonly prisma: PrismaService,
+      private readonly jwtService: ProviderJwtService,
+   ) {}
 
    /** Verifica si un usuario existe */
    private async checkUsuario(identificador: string | string[]): Promise<boolean> {
@@ -65,6 +69,13 @@ export class UsersService {
             },
          });
 
+         const token = this.jwtService.generar({
+            sub: nuevoUsuario.id,
+            username: nuevoUsuario.username,
+            email: nuevoUsuario.email,
+            permiso: nuevoUsuario.permiso,
+         });
+
          // retornar info basica del usuario
          return {
             id: nuevoUsuario.id,
@@ -72,6 +83,9 @@ export class UsersService {
             email: nuevoUsuario.bio,
             bio: nuevoUsuario.bio,
             meta: { icono: nuevoUsuario.icon, banner: nuevoUsuario.banner },
+            seguridad: {
+               token: token,
+            },
          };
       } catch (error) {
          // manejo de error basico
@@ -93,6 +107,13 @@ export class UsersService {
          // validar password en una sola linea
          if (!(await bcrypt.compare(password, usuarioEncontrado.password))) throw new UnauthorizedException('Credenciales invalidas');
 
+         const token = this.jwtService.generar({
+            sub: usuarioEncontrado.id,
+            username: usuarioEncontrado.username,
+            email: usuarioEncontrado.email,
+            permiso: usuarioEncontrado.permiso,
+         });
+
          // retornar info basica
          return {
             id: usuarioEncontrado.id,
@@ -100,6 +121,9 @@ export class UsersService {
             email: usuarioEncontrado.email,
             bio: usuarioEncontrado.bio,
             meta: { icono: usuarioEncontrado.icon, banner: usuarioEncontrado.banner },
+            seguridad: {
+               token: token,
+            },
          };
       } catch (error) {
          // manejo de error basico
