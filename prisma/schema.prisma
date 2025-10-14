@@ -9,9 +9,17 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  username String @unique
-  password String
-  permiso Int    @default(1)
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  username   String      @unique
+  password   String
+  permiso    Int         @default(1)
+  categorias Categoria[]
+}
+
+model Categoria {
+  id        Int    @id @default(autoincrement())
+  nombre    String @unique
+  usuario   User   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
 }

@@ -7,7 +7,7 @@ import { User } from 'generated/prisma';
 
 @Injectable()
 export class UsersService {
-   constructor(private prisma: PrismaService) {}
+   constructor(private prisma: PrismaService) { }
 
    /** Verifica si un usuario existe */
    private async checkUsuario(identificador: string | string[]): Promise<boolean> {
@@ -17,10 +17,10 @@ export class UsersService {
                OR: Array.isArray(identificador)
                   ? [{ username: { in: identificador } }, { email: { in: identificador } }]
                   : [
-                       { username: identificador },
-                       { email: identificador },
-                       ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
-                    ],
+                     { username: identificador },
+                     { email: identificador },
+                     ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
+                  ],
             },
          }));
       } catch (error) {
@@ -37,10 +37,10 @@ export class UsersService {
                OR: Array.isArray(identificador)
                   ? [{ username: { in: identificador } }, { email: { in: identificador } }]
                   : [
-                       { username: identificador },
-                       { email: identificador },
-                       ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
-                    ],
+                     { username: identificador },
+                     { email: identificador },
+                     ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
+                  ],
             },
          });
       } catch (error) {
