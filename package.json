@@ -13,7 +13,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/mainr",
     "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "workbench": "prisma studio"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
