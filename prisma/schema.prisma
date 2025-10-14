@@ -9,11 +9,17 @@ datasource db {
 }
 
 model User {
+  // Datos
   id       Int    @id @default(autoincrement())
-  email    String @unique
   username String @unique
-  password String
+  bio    String @default("Sin biografia")
+  email    String @unique
   permiso  Int    @default(1)
+  password String
+
+  // Custom basica
+  icon   String @default("https://i.pinimg.com/736x/4b/00/8b/4b008be686dbfdfb046785b9aac318c5.jpg")
+  banner String @default("https://i.pinimg.com/736x/ac/e4/8c/ace48c5d4cbc8c5e5e52955b46db0ed2.jpg")
 
   categorias Categoria[]
   juegos     Juego[]
@@ -24,8 +30,20 @@ model Categoria {
   nombre    String @unique
   usuarioId Int
 
-  // Relacion con el usuario
+  // Relacion usuario
   usuario User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  // Relacion juegos
+  juegos Juego[] @relation("CategoriasJuego")
+}
+
+model Imagen {
+  id   Int    @id @default(autoincrement())
+  href String
+
+  // Relacion juegos
+  juegoId Int
+  juego   Juego @relation(fields: [juegoId], references: [id], onDelete: Cascade)
 }
 
 model Juego {
@@ -34,7 +52,13 @@ model Juego {
   descripcion String @default("Sin descripcion")
   precio      Int    @default(0)
 
-  // Relacion con el usuario
+  // Relacion usuario
   usuarioId Int
   usuario   User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  // Relacion categorias
+  categorias Categoria[] @relation("CategoriasJuego")
+
+  // Relacion imagenes
+  imagenes Imagen[]
 }
