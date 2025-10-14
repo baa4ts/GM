@@ -5,6 +5,7 @@ import { PrismaService } from 'src/provider-prisma/provider-prisma.service';
 export class CategoriaService {
    constructor(private prisma: PrismaService) {}
 
+   /** Obtiene las categorias o juegos filtrado por categoria */
    async categoriasJuegos(categorias?: string) {
       try {
          if (!categorias) {
