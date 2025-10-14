@@ -9,17 +9,32 @@ datasource db {
 }
 
 model User {
-  id         Int         @id @default(autoincrement())
-  email      String      @unique
-  username   String      @unique
-  password   String
-  permiso    Int         @default(1)
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  username String @unique
+  password String
+  permiso  Int    @default(1)
+
   categorias Categoria[]
+  juegos     Juego[]
 }
 
 model Categoria {
   id        Int    @id @default(autoincrement())
   nombre    String @unique
-  usuario   User   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId Int
+
+  // Relacion con el usuario
+  usuario User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+}
+
+model Juego {
+  id          Int    @id @default(autoincrement())
+  titulo      String @unique
+  descripcion String @default("Sin descripcion")
+  precio      Int    @default(0)
+
+  // Relacion con el usuario
+  usuarioId Int
+  usuario   User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 }
