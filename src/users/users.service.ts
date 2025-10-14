@@ -1,17 +1,134 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { RegistrarUserDto } from './dto/registrar-user.dto';
+import { PrismaService } from 'src/provider-prisma/provider-prisma.service';
+import * as bcrypt from 'bcrypt';
+import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
+import { User } from 'generated/prisma';
 
 @Injectable()
 export class UsersService {
-  registrar(datos: RegistrarUserDto) {
-    return 'This action adds a new user';
-  }
+   constructor(private prisma: PrismaService) {}
 
-  listar() {
-    return `This action returns all users`;
-  }
+   /** Verifica si un usuario existe */
+   private async checkUsuario(identificador: string | string[]): Promise<boolean> {
+      try {
+         return !!(await this.prisma.user.findFirst({
+            where: {
+               OR: Array.isArray(identificador)
+                  ? [{ username: { in: identificador } }, { email: { in: identificador } }]
+                  : [
+                       { username: identificador },
+                       { email: identificador },
+                       ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
+                    ],
+            },
+         }));
+      } catch (error) {
+         // manejo de error basico
+         return false;
+      }
+   }
 
-  buscarUno(id: number) {
-    return `This action returns a #${id} user`;
-  }
+   /** Obtiene un usuario completo */
+   private async usuario(identificador: string | string[]): Promise<User | null> {
+      try {
+         return await this.prisma.user.findFirst({
+            where: {
+               OR: Array.isArray(identificador)
+                  ? [{ username: { in: identificador } }, { email: { in: identificador } }]
+                  : [
+                       { username: identificador },
+                       { email: identificador },
+                       ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
+                    ],
+            },
+         });
+      } catch (error) {
+         // manejo de error basico
+         return null;
+      }
+   }
+
+   /** Registra un nuevo usuario */
+   async registrar(datos: RegistrarUserDto) {
+      try {
+         // verificar si usuario o email ya existen
+         if (await this.checkUsuario([datos.username, datos.email])) throw new BadRequestException('Usuario o email ya registrado');
+
+         // crear usuario en la base
+         const nuevoUsuario = await this.prisma.user.create({
+            data: {
+               username: datos.username,
+               email: datos.email,
+               password: await bcrypt.hash(datos.password, 10),
+            },
+         });
+
+         // retornar info basica del usuario
+         return {
+            username: nuevoUsuario.username,
+            email: nuevoUsuario.email,
+            id: nuevoUsuario.id,
+         };
+      } catch (error) {
+         // manejo de error basico
+         if (error instanceof BadRequestException) throw error;
+         throw new InternalServerErrorException('Error al crear el usuario');
+      }
+   }
+
+   /** Autentica un usuario */
+   async autenticar(datos: AutenticarUserDtos) {
+      try {
+         // obtener username y password del dto
+         const { username, password } = datos;
+
+         // buscar usuario por username
+         const usuarioEncontrado = await this.usuario(username);
+         if (!usuarioEncontrado) throw new UnauthorizedException('Credenciales invalidas');
+
+         // validar password en una sola linea
+         if (!(await bcrypt.compare(password, usuarioEncontrado.password))) throw new UnauthorizedException('Credenciales invalidas');
+
+         // retornar info basica
+         return {
+            username: usuarioEncontrado.username,
+            email: usuarioEncontrado.email,
+            id: usuarioEncontrado.id,
+         };
+      } catch (error) {
+         // manejo de error basico
+         if (error instanceof UnauthorizedException) throw error;
+         throw new InternalServerErrorException('Error al autenticar usuario');
+      }
+   }
+
+   /** Lista todos los usuarios */
+   async listar() {
+      try {
+         return await this.prisma.user.findMany({ select: { username: true, id: true }, orderBy: { id: 'desc' } });
+      } catch (error) {
+         // manejo de error basico
+         throw new InternalServerErrorException('Error al obtener los usuarios');
+      }
+   }
+
+   /** Busca un usuario por identificador */
+   async buscarUno(identificador: string) {
+      try {
+         const usuarioEncontrado = await this.usuario(identificador);
+
+         if (!usuarioEncontrado) throw new NotFoundException('Usuario no encontrado');
+
+         return {
+            username: usuarioEncontrado.username,
+            id: usuarioEncontrado.id,
+            email: usuarioEncontrado.email,
+         };
+      } catch (error) {
+         // manejo de error basico
+         if (error instanceof NotFoundException) throw error;
+         throw new InternalServerErrorException('Error al buscar el usuario');
+      }
+   }
 }

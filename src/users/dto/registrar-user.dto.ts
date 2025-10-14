@@ -1,18 +1,9 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { AutenticarUserDtos } from './autenticar-user.dtos';
 
-export class RegistrarUserDto {
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(5)
-  username: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsEmail()
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(6)
-  password: string;
+export class RegistrarUserDto extends AutenticarUserDtos {
+   @IsNotEmpty()
+   @IsString()
+   @IsEmail()
+   email: string;
 }
