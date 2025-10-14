@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UsersService } from './users.service';
 import { RegistrarUserDto } from './dto/registrar-user.dto';
 import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
+import { ActualizarUserDto } from './dto/actualizar-user.dtos';
 
 @Controller('users')
 export class UsersController {
@@ -20,6 +21,11 @@ export class UsersController {
    @Get()
    listar() {
       return this.usersService.listar();
+   }
+
+   @Patch()
+   actualizar(@Body() datos: ActualizarUserDto) {
+      return this.usersService.actualizar(datos);
    }
 
    @Get(':identificador')

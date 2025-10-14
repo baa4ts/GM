@@ -4,10 +4,11 @@ import { PrismaService } from 'src/provider-prisma/provider-prisma.service';
 import * as bcrypt from 'bcrypt';
 import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
 import { User } from 'generated/prisma';
+import { ActualizarUserDto } from './dto/actualizar-user.dtos';
 
 @Injectable()
 export class UsersService {
-   constructor(private prisma: PrismaService) { }
+   constructor(private prisma: PrismaService) {}
 
    /** Verifica si un usuario existe */
    private async checkUsuario(identificador: string | string[]): Promise<boolean> {
@@ -17,10 +18,10 @@ export class UsersService {
                OR: Array.isArray(identificador)
                   ? [{ username: { in: identificador } }, { email: { in: identificador } }]
                   : [
-                     { username: identificador },
-                     { email: identificador },
-                     ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
-                  ],
+                       { username: identificador },
+                       { email: identificador },
+                       ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
+                    ],
             },
          }));
       } catch (error) {
@@ -37,10 +38,10 @@ export class UsersService {
                OR: Array.isArray(identificador)
                   ? [{ username: { in: identificador } }, { email: { in: identificador } }]
                   : [
-                     { username: identificador },
-                     { email: identificador },
-                     ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
-                  ],
+                       { username: identificador },
+                       { email: identificador },
+                       ...(isNaN(Number(identificador)) ? [] : [{ id: Number(identificador) }]),
+                    ],
             },
          });
       } catch (error) {
@@ -66,9 +67,11 @@ export class UsersService {
 
          // retornar info basica del usuario
          return {
-            username: nuevoUsuario.username,
-            email: nuevoUsuario.email,
             id: nuevoUsuario.id,
+            username: nuevoUsuario.username,
+            email: nuevoUsuario.bio,
+            bio: nuevoUsuario.bio,
+            meta: { icono: nuevoUsuario.icon, banner: nuevoUsuario.banner },
          };
       } catch (error) {
          // manejo de error basico
@@ -92,9 +95,11 @@ export class UsersService {
 
          // retornar info basica
          return {
+            id: usuarioEncontrado.id,
             username: usuarioEncontrado.username,
             email: usuarioEncontrado.email,
-            id: usuarioEncontrado.id,
+            bio: usuarioEncontrado.bio,
+            meta: { icono: usuarioEncontrado.icon, banner: usuarioEncontrado.banner },
          };
       } catch (error) {
          // manejo de error basico
@@ -106,10 +111,36 @@ export class UsersService {
    /** Lista todos los usuarios */
    async listar() {
       try {
-         return await this.prisma.user.findMany({ select: { username: true, id: true }, orderBy: { id: 'desc' } });
+         return await this.prisma.user.findMany({
+            select: { id: true, username: true, icon: true, banner: true },
+            orderBy: { id: 'desc' },
+         });
       } catch (error) {
          // manejo de error basico
          throw new InternalServerErrorException('Error al obtener los usuarios');
+      }
+   }
+
+   /** Actualizar datos del usuario */
+   async actualizar(datos: ActualizarUserDto) {
+      try {
+         const usuarioActualizado = await this.prisma.user.update({
+            where: { id: 1 },
+            data: datos,
+         });
+
+         // retornar info basica
+         return {
+            id: usuarioActualizado.id,
+            username: usuarioActualizado.username,
+            email: usuarioActualizado.email,
+            bio: usuarioActualizado.bio,
+            meta: { icono: usuarioActualizado.icon, banner: usuarioActualizado.banner },
+         };
+      } catch (error) {
+         // manejo de error basico
+         if (error instanceof NotFoundException) throw error;
+         throw new InternalServerErrorException('Error al buscar el usuario');
       }
    }
 
@@ -120,10 +151,13 @@ export class UsersService {
 
          if (!usuarioEncontrado) throw new NotFoundException('Usuario no encontrado');
 
+         // retornar info basica
          return {
-            username: usuarioEncontrado.username,
             id: usuarioEncontrado.id,
+            username: usuarioEncontrado.username,
             email: usuarioEncontrado.email,
+            bio: usuarioEncontrado.bio,
+            meta: { icono: usuarioEncontrado.icon, banner: usuarioEncontrado.banner },
          };
       } catch (error) {
          // manejo de error basico
