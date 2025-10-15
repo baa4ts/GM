@@ -42,6 +42,7 @@ export class JuegosService {
             data: {
                titulo: datos.titulo,
                descripcion: datos.descripcion ?? 'Sin descripcion',
+               link: datos.link,
                precio: datos.precio,
                usuario: { connect: { id: userId } },
                imagenes: { create: datos.imagenes.map((href) => ({ href })) },
@@ -118,6 +119,7 @@ export class JuegosService {
             data: {
                titulo: datos.titulo,
                descripcion: datos.descripcion,
+               link: datos.link,
                imagenes: { create: datos.imagenes?.map((href) => ({ href })) },
                categorias: { connect: datos.categorias?.map((nombre) => ({ nombre })) },
             },

@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class PublicarJuegoDtos {
    @IsString()
@@ -7,6 +7,10 @@ export class PublicarJuegoDtos {
    @IsString()
    @IsOptional()
    descripcion?: string;
+
+   @IsString()
+   @IsNotEmpty()
+   link: string;
 
    @IsNumber()
    precio: number;

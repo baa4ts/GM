@@ -23,6 +23,7 @@ model User {
 
   categorias Categoria[]
   juegos     Juego[]
+  biblioteca Biblioteca[] // relacion con biblioteca
 }
 
 model Categoria {
@@ -50,16 +51,29 @@ model Juego {
   id          Int      @id @default(autoincrement())
   titulo      String   @unique
   descripcion String   @default("Sin descripcion")
+  link        String
   precio      Int      @default(0)
   publicado   DateTime @default(now())
-  
+
   // Relacion usuario
-  usuarioId   Int
-  usuario     User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId Int
+  usuario   User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   // Relacion categorias
   categorias Categoria[] @relation("CategoriasJuego")
 
   // Relacion imagenes
   imagenes Imagen[]
+
+  // Relacion con biblioteca
+  biblioteca Biblioteca[]
+}
+
+model Biblioteca {
+  id        Int @id @default(autoincrement())
+  usuarioId Int
+  juegoId   Int
+
+  usuario User  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  juego   Juego @relation(fields: [juegoId], references: [id], onDelete: Cascade)
 }
