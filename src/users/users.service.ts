@@ -80,7 +80,7 @@ export class UsersService {
          return {
             id: nuevoUsuario.id,
             username: nuevoUsuario.username,
-            email: nuevoUsuario.bio,
+            email: nuevoUsuario.email,
             bio: nuevoUsuario.bio,
             meta: { icono: nuevoUsuario.icon, banner: nuevoUsuario.banner },
             seguridad: {
