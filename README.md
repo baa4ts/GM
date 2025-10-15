@@ -60,6 +60,6 @@ src/
  ├── provider-prisma/
  │
  │  # Provider para seguridad
- ├──  seguridad-roles/
+ ├── seguridad-roles/
  └── seguridad-token/
 ```
