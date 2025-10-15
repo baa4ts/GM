@@ -11,14 +11,14 @@ export class BibliotecaController {
 
    @Post()
    @UseGuards(SeguridadRolesGuard)
-   @Permiso(2)
+   @Permiso(1)
    create(@Req() req: Request, @Body() datos: RegistrarJuegoDtos) {
       return this.bibliotecaService.registrar(req, datos);
    }
 
    @Get()
    @UseGuards(SeguridadRolesGuard)
-   @Permiso(2)
+   @Permiso(1)
    findAll(@Req() req: Request) {
       return this.bibliotecaService.listar(req);
    }
