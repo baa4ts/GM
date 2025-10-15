@@ -4,11 +4,9 @@ import { UserDecoded, UserPayload } from './interfaces/jwt.interface';
 
 @Injectable()
 export class ProviderJwtService {
-   constructor() {}
-
    private readonly secret = process.env.JWT_SECRET || '123456';
 
-   generar(payload: UserPayload) {
+   generar(payload: UserPayload): string {
       return jwt.sign(payload, this.secret, { expiresIn: '1h' });
    }
 
@@ -18,7 +16,8 @@ export class ProviderJwtService {
             token = token.slice(7);
          }
          return jwt.verify(token, this.secret) as unknown as UserDecoded;
-      } catch {
+      } catch (error) {
+         console.error('Token invalido o expirado:', error);
          return null;
       }
    }

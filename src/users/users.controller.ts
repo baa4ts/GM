@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RegistrarUserDto } from './dto/registrar-user.dto';
 import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
@@ -28,7 +28,7 @@ export class UsersController {
    @Patch()
    @UseGuards(SeguridadRolesGuard)
    @Permiso(1)
-   actualizar(@Req() req, @Body() datos: ActualizarUserDto) {
+   actualizar(@Req() req: any, @Body() datos: ActualizarUserDto) {
       return this.usersService.actualizar(req, datos);
    }
 

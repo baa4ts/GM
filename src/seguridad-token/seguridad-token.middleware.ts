@@ -15,7 +15,14 @@ export class SeguridadTokenMiddleware implements NestMiddleware {
       const token = req.headers.authorization;
       if (!token) throw new UnauthorizedException('Token bearer faltante');
 
-      const user: UserDecoded | null = this.jwtService.verificar(token);
+      let user: UserDecoded | null;
+      try {
+         user = this.jwtService.verificar(token);
+      } catch (error) {
+         console.error('Error al verificar token:', error);
+         throw new UnauthorizedException('Token invalido o modificado');
+      }
+
       if (!user) throw new UnauthorizedException('Token invalido o modificado');
 
       try {
@@ -25,10 +32,12 @@ export class SeguridadTokenMiddleware implements NestMiddleware {
             },
          });
 
-         if (!usuario) throw new UnauthorizedException('No esta autenticado');
+         if (!usuario) throw new UnauthorizedException('Usuario no autenticado');
+
          req['user'] = user as UserPayload;
-      } catch {
-         throw new InternalServerErrorException('Error al verificar el token');
+      } catch (error) {
+         console.error('Error al verificar usuario del token:', error);
+         throw new InternalServerErrorException('Error interno al verificar token');
       }
 
       next();
