@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { ProviderPrismaModule } from './provider-prisma/provider-prisma.module';
 import { CategoriaModule } from './categoria/categoria.module';
+import { JuegosModule } from './juegos/juegos.module';
 
 @Module({
-   imports: [UsersModule, ProviderPrismaModule, CategoriaModule],
+   imports: [UsersModule, ProviderPrismaModule, CategoriaModule, JuegosModule],
    controllers: [],
    providers: [],
 })

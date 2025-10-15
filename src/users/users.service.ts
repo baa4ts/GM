@@ -6,6 +6,7 @@ import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
 import { User } from 'generated/prisma';
 import { ActualizarUserDto } from './dto/actualizar-user.dtos';
 import { ProviderJwtService } from 'src/provider-jwt/provider-jwt.service';
+import { Request } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -147,10 +148,10 @@ export class UsersService {
 
    /** Actualizar datos del usuario */
    async actualizar(req: Request, datos: ActualizarUserDto) {
-      const userId = req['user']?.['sub'];
-      if (!userId) throw new UnauthorizedException('Usuario no autenticado');
-
       try {
+         const userId = req['user']?.['sub'];
+         if (!userId) throw new UnauthorizedException('Usuario no autenticado');
+
          const usuarioActualizado = await this.prisma.user.update({
             where: { id: userId },
             data: datos,

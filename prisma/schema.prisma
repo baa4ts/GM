@@ -12,7 +12,7 @@ model User {
   // Datos
   id       Int    @id @default(autoincrement())
   username String @unique
-  bio    String @default("Sin biografia")
+  bio      String @default("Sin biografia")
   email    String @unique
   permiso  Int    @default(1)
   password String
@@ -47,14 +47,15 @@ model Imagen {
 }
 
 model Juego {
-  id          Int    @id @default(autoincrement())
-  titulo      String @unique
-  descripcion String @default("Sin descripcion")
-  precio      Int    @default(0)
-
+  id          Int      @id @default(autoincrement())
+  titulo      String   @unique
+  descripcion String   @default("Sin descripcion")
+  precio      Int      @default(0)
+  publicado   DateTime @default(now())
+  
   // Relacion usuario
-  usuarioId Int
-  usuario   User @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   Int
+  usuario     User     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   // Relacion categorias
   categorias Categoria[] @relation("CategoriasJuego")

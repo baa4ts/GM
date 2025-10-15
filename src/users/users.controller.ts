@@ -5,6 +5,7 @@ import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
 import { ActualizarUserDto } from './dto/actualizar-user.dtos';
 import { Permiso } from 'src/seguridad-roles/reflectores/permiso.decorador';
 import { SeguridadRolesGuard } from 'src/seguridad-roles/seguridad-roles.guard';
+import type { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -28,7 +29,7 @@ export class UsersController {
    @Patch()
    @UseGuards(SeguridadRolesGuard)
    @Permiso(1)
-   actualizar(@Req() req: any, @Body() datos: ActualizarUserDto) {
+   actualizar(@Req() req: Request, @Body() datos: ActualizarUserDto) {
       return this.usersService.actualizar(req, datos);
    }
 

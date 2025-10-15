@@ -33,6 +33,7 @@ export class CategoriaService {
          });
 
          return juegos.map((juego) => ({
+            id: juego.id,
             titulo: juego.titulo,
             descripcion: juego.descripcion,
             precio: juego.precio,

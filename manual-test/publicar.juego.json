@@ -1,0 +1,12 @@
+{
+  "titulo": "Carlos",
+  "descripcion": "Este es un juego pana",
+  "precio": 13,
+  "categorias": [
+    "cartas",
+    "casual"
+  ],
+  "imagenes": [
+    "https://i.pinimg.com/1200x/46/20/c7/4620c71d87f2b375cb67a906604375f7.jpg"
+  ]
+}
