@@ -61,7 +61,7 @@ async function main() {
             data: {
                 username: 'admin',
                 email: 'admin@example.com',
-                permiso: 5,
+                permiso: 2,
                 password: hashedPassword,
             },
         })
