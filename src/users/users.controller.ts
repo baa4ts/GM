@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RegistrarUserDto } from './dto/registrar-user.dto';
 import { AutenticarUserDtos } from './dto/autenticar-user.dtos';
 import { ActualizarUserDto } from './dto/actualizar-user.dtos';
+import { Permiso } from 'src/seguridad-roles/reflectores/permiso.decorador';
+import { SeguridadRolesGuard } from 'src/seguridad-roles/seguridad-roles.guard';
 
 @Controller('users')
 export class UsersController {
@@ -24,8 +26,10 @@ export class UsersController {
    }
 
    @Patch()
-   actualizar(@Body() datos: ActualizarUserDto) {
-      return this.usersService.actualizar(datos);
+   @UseGuards(SeguridadRolesGuard)
+   @Permiso(1)
+   actualizar(@Req() req, @Body() datos: ActualizarUserDto) {
+      return this.usersService.actualizar(req, datos);
    }
 
    @Get(':identificador')

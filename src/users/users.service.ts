@@ -146,10 +146,10 @@ export class UsersService {
    }
 
    /** Actualizar datos del usuario */
-   async actualizar(datos: ActualizarUserDto) {
+   async actualizar(req: Request, datos: ActualizarUserDto) {
       try {
          const usuarioActualizado = await this.prisma.user.update({
-            where: { id: 1 },
+            where: { id: req['user']['sub'] },
             data: datos,
          });
 
@@ -175,6 +175,27 @@ export class UsersService {
 
          if (!usuarioEncontrado) throw new NotFoundException('Usuario no encontrado');
 
+         let juegos: any = [];
+
+         if (usuarioEncontrado.permiso === 2) {
+            const juegosRaw = await this.prisma.juego.findMany({
+               where: { usuarioId: usuarioEncontrado.id },
+               include: {
+                  categorias: true,
+                  imagenes: true,
+               },
+            });
+
+            juegos = juegosRaw.map((j) => ({
+               id: j.id,
+               titulo: j.titulo,
+               descripcion: j.descripcion,
+               precio: j.precio,
+               categorias: j.categorias.map((c) => c.nombre),
+               meta: { imagenes: j.imagenes.map((i) => i.href) },
+            }));
+         }
+
          // retornar info basica
          return {
             id: usuarioEncontrado.id,
@@ -182,6 +203,9 @@ export class UsersService {
             email: usuarioEncontrado.email,
             bio: usuarioEncontrado.bio,
             meta: { icono: usuarioEncontrado.icon, banner: usuarioEncontrado.banner },
+
+            // Retornar solo si el usuario es developer
+            ...(usuarioEncontrado.permiso === 2 && { juegos }),
          };
       } catch (error) {
          // manejo de error basico

@@ -14,6 +14,9 @@ export class ProviderJwtService {
 
    verificar(token: string): UserDecoded | null {
       try {
+         if (token.startsWith('Bearer ')) {
+            token = token.slice(7);
+         }
          return jwt.verify(token, this.secret) as unknown as UserDecoded;
       } catch {
          return null;

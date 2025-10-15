@@ -26,7 +26,6 @@ export class SeguridadTokenMiddleware implements NestMiddleware {
          });
 
          if (!usuario) throw new UnauthorizedException('No esta autenticado');
-
          req['user'] = user as UserPayload;
       } catch {
          throw new InternalServerErrorException('Error al verificar el token');
