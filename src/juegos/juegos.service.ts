@@ -3,6 +3,7 @@ import { ActualizarJuegoDto } from './dto/actualizar-juego.dto';
 import { PrismaService } from 'src/provider-prisma/provider-prisma.service';
 import { PublicarJuegoDtos } from './dto/publicar-juego.dto';
 import { Request } from 'express';
+import { off } from 'process';
 
 @Injectable()
 export class JuegosService {
@@ -67,18 +68,38 @@ export class JuegosService {
    }
 
    /** Lista todos los juegos */
-   async listar() {
+   async listar(page: number = 1, limit: number = 10) {
       try {
-         const juegos = await this.prisma.juego.findMany({ include: { categorias: true, imagenes: true, usuario: true } });
-         return juegos.map((j) => ({
-            id: j.id,
-            titulo: j.titulo,
-            descripcion: j.descripcion,
-            precio: j.precio,
-            usuario: { id: j.usuario.id, username: j.usuario.username, icon: j.usuario.icon },
-            imagenes: j.imagenes.map((i) => i.href),
-            categorias: j.categorias.map((c) => c.nombre),
-         }));
+         const skip = (page - 1) * limit;
+         const total = await this.prisma.juego.count();
+
+         const juegos = await this.prisma.juego.findMany({
+            include: { categorias: true, imagenes: true, usuario: true },
+            take: limit,
+            skip,
+         });
+
+         return {
+            pagination: {
+               page,
+               limit,
+               total,
+               totalPages: Math.ceil(total / limit),
+            },
+            juegos: juegos.map((j) => ({
+               id: j.id,
+               titulo: j.titulo,
+               descripcion: j.descripcion,
+               precio: j.precio,
+               usuario: {
+                  id: j.usuario.id,
+                  username: j.usuario.username,
+                  icon: j.usuario.icon,
+               },
+               imagenes: j.imagenes.map((i) => i.href),
+               categorias: j.categorias.map((c) => c.nombre),
+            })),
+         };
       } catch (error) {
          console.error('Error al obtener juegos:', error);
          throw new InternalServerErrorException('Error interno al obtener juegos');

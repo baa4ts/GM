@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { JuegosService } from './juegos.service';
 import { ActualizarJuegoDto } from './dto/actualizar-juego.dto';
 import { Permiso } from 'src/seguridad-roles/reflectores/permiso.decorador';
@@ -13,31 +13,31 @@ export class JuegosController {
    @Post()
    @UseGuards(SeguridadRolesGuard)
    @Permiso(2)
-   create(@Req() req: Request, @Body() datos: PublicarJuegoDtos) {
+   publicar(@Req() req: Request, @Body() datos: PublicarJuegoDtos) {
       return this.juegosService.publicar(req, datos);
    }
 
    @Get()
-   findAll() {
-      return this.juegosService.listar();
+   listar(@Query('page') page: string = '1', @Query('limit') limit: string = '10') {
+      return this.juegosService.listar(parseInt(page), parseInt(limit));
    }
 
    @Get(':id')
-   findOne(@Param('id') id: number) {
+   buscar(@Param('id') id: number) {
       return this.juegosService.buscar(+id);
    }
 
    @Patch(':id')
    @UseGuards(SeguridadRolesGuard)
    @Permiso(2)
-   update(@Req() req: Request, @Param('id') id: number, @Body() datos: ActualizarJuegoDto) {
+   actualizar(@Req() req: Request, @Param('id') id: number, @Body() datos: ActualizarJuegoDto) {
       return this.juegosService.actualizar(req, id, datos);
    }
 
    @Delete(':id')
    @UseGuards(SeguridadRolesGuard)
    @Permiso(2)
-   remove(@Req() req: Request, @Param('id') id: number) {
+   eliminar(@Req() req: Request, @Param('id') id: number) {
       return this.juegosService.eliminar(req, id);
    }
 }
