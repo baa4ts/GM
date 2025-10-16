@@ -14,7 +14,7 @@ Backend del proyecto **Game Store**, desarrollado como parte del curso de progra
 * usuarios (Registrar, Autenticar, obtener uno, listar, actualizar)
 * juegos (Publicar, Listar, Actualizar y eliminar)
 * categorias (listar categorias, filtrar juegos por categorias)
-* biblioteca (registrar: luego de una pasarela de pago se puede registrar el juego en la biblioteca del usuario, listar: lista los juegos en la biblioteca del usuario)
+* biblioteca (registrar: luego de una pasarela de pago se puede registrar el juego en la biblioteca del usuario, listar: lista los juegos en la biblioteca del usuario, incluye filtrado por categorias tambien)
 
 #### Seguridad
 
