@@ -33,16 +33,24 @@ export class BibliotecaService {
    }
 
    /** Listar juegos de la biblioteca del usuario */
-   async listar(req: Request) {
+   async listar(req: Request, page: number = 1, limit: number = 10) {
       const userId = req['user']?.['sub'];
       if (!userId) throw new UnauthorizedException('Usuario no autenticado');
 
       try {
+         const skip = (page - 1) * limit;
+
+         const total = await this.prisma.biblioteca.count({
+            where: { usuarioId: userId },
+         });
+
          const registros = await this.prisma.biblioteca.findMany({
             where: { usuarioId: userId },
             include: {
                juego: { include: { categorias: true, imagenes: true } },
             },
+            take: limit,
+            skip,
          });
 
          const juegos = registros.map((j) => ({
@@ -55,7 +63,12 @@ export class BibliotecaService {
          }));
 
          return {
-            count: juegos.length,
+            pagination: {
+               page,
+               limit,
+               total,
+               totalPages: Math.ceil(total / limit),
+            },
             juegos,
          };
       } catch (error) {

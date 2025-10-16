@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards, Query } from '@nestjs/common';
 import { BibliotecaService } from './biblioteca.service';
 import { RegistrarJuegoDtos } from './dto/registrar.dtos';
 import type { Request } from 'express';
@@ -19,7 +19,9 @@ export class BibliotecaController {
    @Get()
    @UseGuards(SeguridadRolesGuard)
    @Permiso(1)
-   findAll(@Req() req: Request) {
-      return this.bibliotecaService.listar(req);
+   findAll(@Req() req: Request, @Query('page') page: string = '1', @Query('limit') limit: string = '10') {
+      const pagina = parseInt(page, 10);
+      const limite = parseInt(limit, 10);
+      return this.bibliotecaService.listar(req, pagina, limite);
    }
 }
