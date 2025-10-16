@@ -18,8 +18,8 @@ export class JuegosController {
    }
 
    @Get()
-   listar(@Query('page') page: string = '1', @Query('limit') limit: string = '10') {
-      return this.juegosService.listar(parseInt(page), parseInt(limit));
+   listar(@Query('page') page: string = '1', @Query('limit') limit: string = '10', @Query('categorias') categorias?: string) {
+      return this.juegosService.listar(parseInt(page), parseInt(limit), categorias);
    }
 
    @Get(':id')

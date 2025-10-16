@@ -4,6 +4,7 @@ import { PrismaService } from 'src/provider-prisma/provider-prisma.service';
 import { PublicarJuegoDtos } from './dto/publicar-juego.dto';
 import { Request } from 'express';
 import { off } from 'process';
+import { json } from 'stream/consumers';
 
 @Injectable()
 export class JuegosService {
@@ -68,12 +69,20 @@ export class JuegosService {
    }
 
    /** Lista todos los juegos */
-   async listar(page: number = 1, limit: number = 10) {
+   async listar(page: number = 1, limit: number = 10, categorias?: string) {
       try {
          const skip = (page - 1) * limit;
-         const total = await this.prisma.juego.count();
+
+         const where: any = {};
+         if (categorias) {
+            const lista = categorias.split(',').map((c) => c.trim().toLowerCase());
+            where.categorias = { some: { nombre: { in: lista } } };
+         }
+
+         const total = await this.prisma.juego.count({ where });
 
          const juegos = await this.prisma.juego.findMany({
+            where,
             include: { categorias: true, imagenes: true, usuario: true },
             take: limit,
             skip,
